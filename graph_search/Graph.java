@@ -7,9 +7,23 @@ import java.util.Stack;
 
 import java.util.NoSuchElementException;
 
+/**
+ * @author Jacob Keller
+ * @since 11/01/2021
+ * 
+ */
 public class Graph {
+   // Create head arraylist that will hold each node in the graph for the graph
+   // class
    private ArrayList<Node> head = new ArrayList<Node>();
 
+   /**
+    * Constructor for the graph class. Reads from a file where each node and edge
+    * is delimited by the string delimiter.
+    * 
+    * @param filename  Filename of the file holding the graph.
+    * @param delimiter delimiter of each of the nodes and edges in the file.
+    */
    public Graph(String filename, String delimiter) {
       File inputFile = new File(filename);
       try {
@@ -32,6 +46,9 @@ public class Graph {
       }
    }
 
+   /**
+    * toString method for the graph class.
+    */
    public String toString() {
       String ret = "";
 
@@ -43,6 +60,13 @@ public class Graph {
       return ret;
    }
 
+   /**
+    * Takes in a String that represents the value of a Node. Returns the position
+    * of that node in the graph. If the Node does not exist, returns -1.
+    * 
+    * @param s String representing a node value
+    * @return position of the node in the head list if it exists, -1 otherwise.
+    */
    private int contains(String s) {
       Node tmp;
       for (int i = 0; i < head.size(); i++) {
@@ -53,10 +77,26 @@ public class Graph {
       return -1;
    }
 
+   /**
+    * Generic depth first search for the graph class. This method will search
+    * through the entire graph since there is no destination node.
+    * 
+    * @param s Destination string to search for in the graph.
+    * @return String representation of the depth first path of the entire graph.
+    */
    public String depth_search(String s) {
       return depth_search(s, null);
    }
 
+   /**
+    * Performs a depth first search starting with the starting node and ending with
+    * the end node. Returns the path found as a String.
+    * 
+    * @param start String represnting the starting Node in the graph
+    * @param end   String representing the ending Node in the graoh to search for.
+    * @return String representation of the depth first search from starting node to
+    *         the ending node.
+    */
    public String depth_search(String start, String end) {
 
       String final_str = ""; // Declare the string to hold the final value
@@ -136,10 +176,21 @@ public class Graph {
       return final_str; // Return the string
    }
 
+   /**
+    * 
+    * @param s
+    * @return
+    */
    public String width_search(String s) {
       return width_search(s, null);
    }
 
+   /**
+    * 
+    * @param s
+    * @param t
+    * @return
+    */
    public String width_search(String s, String t) {
 
       if (s == null || contains(s) < 0) {
@@ -185,6 +236,12 @@ public class Graph {
       return ret;
    }
 
+   /**
+    * 
+    * @param record
+    * @param n
+    * @return
+    */
    private boolean contains(ArrayList<Edge> record, String n) {
       if (record == null || n == null)
          throw new NoSuchElementException("Edges are null");
@@ -196,6 +253,12 @@ public class Graph {
       return false;
    }
 
+   /**
+    * 
+    * @param s
+    * @param t
+    * @return
+    */
    public ArrayList<Edge> shortest_path(String s, String t) {
 
       // Check that starting point is valid
@@ -275,6 +338,34 @@ public class Graph {
 
    }
 
+   /**
+    * Takes in a course number as a string and searches for the required courses
+    * needed to be taken before this course. Returns an arraylist containing all of
+    * the edges of the courses needed to be taken.
+    * 
+    * @param course A string that represents the course number of the course to be
+    *               taken.
+    * @return arraylist containing the edges that represent the classes that need
+    *         to be taken before the current course
+    */
+   private ArrayList<Edge> findRequiredClasses(String course) {
+
+      // Check for valid inputs
+      if (course == null || contains(course) < 0) {
+         throw new NoSuchElementException("Requested course is not offered.");
+      }
+
+      // Create the list that will hold the final required course
+      ArrayList<Edge> final_list = new ArrayList<Edge>();
+
+      return final_list;
+   }
+
+   /**
+    * 
+    * @param paths
+    * @return
+    */
    private ArrayList<Edge> findLowestCostPath(ArrayList<ArrayList<Edge>> paths) {
 
       ArrayList<Edge> shortest_path = new ArrayList<Edge>();
@@ -301,6 +392,11 @@ public class Graph {
       return shortest_path;
    }
 
+   /**
+    * 
+    * @param arr
+    * @return
+    */
    public String seize_path(ArrayList<Edge> arr) {
       // Declare final string and edge for reuse here
       String ret = "";
@@ -319,6 +415,10 @@ public class Graph {
       return ret;
    }
 
+   /**
+    * 
+    * @param args
+    */
    public static void main(String args[]) {
       Graph g = new Graph("g1.txt", " ");
       System.out.println(g);
