@@ -177,19 +177,24 @@ public class Graph {
    }
 
    /**
+    * Generic width first search of the graph object. Will return the entire search
+    * since there is no end node to complete the path
     * 
-    * @param s
-    * @return
+    * @param s String representing the starting node of the width first search.
+    * @return A string that shows the complete path from starting node.
     */
    public String width_search(String s) {
       return width_search(s, null);
    }
 
    /**
+    * Implements width first search on the Graph object from the starting node s to
+    * the ending node t. Returns the path found as a string.
     * 
-    * @param s
-    * @param t
-    * @return
+    * @param s String representing the starting node of the path.
+    * @param t String representing the ending node of the path.
+    * @return A String that represents the final path found fro s to t using width
+    *         first search
     */
    public String width_search(String s, String t) {
 
@@ -237,10 +242,13 @@ public class Graph {
    }
 
    /**
+    * Searches through an Arraylist of Edge objects and compares the destination of
+    * those edges with the String n. If n is in the list, returns True, False
+    * otherwise.
     * 
-    * @param record
-    * @param n
-    * @return
+    * @param record Arraylist containing Edge objects.
+    * @param n      A string n that represents a Node value in the graph.
+    * @return True if the Arraylist contains a record for n, False otherwise.
     */
    private boolean contains(ArrayList<Edge> record, String n) {
       if (record == null || n == null)
@@ -254,10 +262,14 @@ public class Graph {
    }
 
    /**
+    * Implements a shortest path algorithm on the Graph data structure for the
+    * starting node s and the ending node t. Returns the shortest path found as an
+    * Arraylist of Edge objects.
     * 
-    * @param s
-    * @param t
-    * @return
+    * @param s String representing the starting node in the graph.
+    * @param t String representing the end or destination node in the graph.
+    * @return An Arraylist of Edge objects that will represent the shortest path on
+    *         the graph between s and t.
     */
    public ArrayList<Edge> shortest_path(String s, String t) {
 
@@ -362,9 +374,12 @@ public class Graph {
    }
 
    /**
+    * Takes in many arraylist objects, each representing a path from start to
+    * target, and returns the one that has the lowest cost.
     * 
-    * @param paths
-    * @return
+    * @param paths An arraylist that contains arraylists of edges.
+    * @return A single arraylist containing edges that will represented the lowest
+    *         cost path of all of the paths passed in as parameters.
     */
    private ArrayList<Edge> findLowestCostPath(ArrayList<ArrayList<Edge>> paths) {
 
@@ -393,9 +408,11 @@ public class Graph {
    }
 
    /**
+    * Takes in an Arraylist of Edge objects and returns a String representing the
+    * final path from starting node to ending node.
     * 
-    * @param arr
-    * @return
+    * @param arr Arraylist containing edges that represent a path.
+    * @return A string representation of the final path from start to finish node.
     */
    public String seize_path(ArrayList<Edge> arr) {
       // Declare final string and edge for reuse here
@@ -416,8 +433,9 @@ public class Graph {
    }
 
    /**
+    * Driver function
     * 
-    * @param args
+    * @param args command line arguments
     */
    public static void main(String args[]) {
       Graph g = new Graph("g1.txt", " ");
