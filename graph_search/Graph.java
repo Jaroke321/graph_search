@@ -367,10 +367,59 @@ public class Graph {
          throw new NoSuchElementException("Requested course is not offered.");
       }
 
-      // Create the list that will hold the final required course
+      // Create the list that will hold the final required courses and a list to hold
+      // all paths that have already been searched
       ArrayList<Edge> final_list = new ArrayList<Edge>();
+      ArrayList<Edge> searched = new ArrayList<Edge>();
+
+      // Get the first node to search and create arraylist to store future searches
+      Node n = head.get(contains(course));
+      ArrayList<Node> toSearch = new ArrayList<Node>();
+      toSearch.add(n); // Initialize the list for the while loop
+
+      // Go until all required courses are found
+      while (!toSearch.isEmpty()) {
+
+         Node tmp_node = null;
+         // n = toSearch.get(0); // Get the first node in the toSearch list
+         n = toSearch.remove(0); // Get and remove the first node in the toSearch list
+
+         // Go through each Edge attached to the current Node
+         for (int i = 0; i < n.getNnum(); i++) {
+            Edge tmp = n.getNeighbor(i); // Get the current edge
+            // If the edge is already in the final list, do not add it
+            if (!final_list.contains(tmp)) {
+               final_list.add(tmp); // Add the edge to the final list
+
+               // Get the node representing the destination of the edge and add it to the
+               // toSearch list
+               tmp_node = head.get(contains(tmp.getDest()));
+               toSearch.add(tmp_node);
+            }
+         }
+      }
 
       return final_list;
+   }
+
+   /**
+    * Takes in an Arraylist of Edge objects that represent the connections between
+    * courses at University and returns a String representation of the courses that
+    * need to be taken.
+    * 
+    * @param arr Arraulist of Edge objects that represents all of the required
+    *            courses that need to be taken for a specific course.
+    * @return A String that will outline the required courses to take.
+    */
+   private String printClassRequirements(ArrayList<Edge> arr) {
+      String final_str = "";
+
+      for (int i = 0; i < arr.size(); i++) {
+         Edge tmp = arr.get(i);
+         final_str += "( " + tmp.getSource() + " , " + tmp.getDest() + " ) ==> ";
+      }
+
+      return final_str;
    }
 
    /**
@@ -438,7 +487,12 @@ public class Graph {
     * @param args command line arguments
     */
    public static void main(String args[]) {
+      // Declare and load graph objects
       Graph g = new Graph("g1.txt", " ");
+      Graph classes = new Graph("comp_sci.txt", " ");
+
+      // First run all methods on the graph g to see search functionality
+      System.out.println("\n[+] Running all search functions on graph g...\n");
       System.out.println(g);
       System.out.println("Depth First Search:");
       System.out.println(g.depth_search("1", "6") + "\n");
@@ -446,5 +500,14 @@ public class Graph {
       System.out.println(g.width_search("1", "6") + "\n");
       System.out.println("Shortest Path Search:");
       System.out.println(g.seize_path(g.shortest_path("1", "6")) + "\n");
+      System.out.println("[+]Done with graph g...");
+
+      // Run the scheduling functions on graph classes.
+      System.out.println("\n[+] Running all scheduling functions on classes graph...\n");
+      System.out.println(classes);
+      ArrayList<Edge> tmp = classes.findRequiredClasses("466");
+      System.out.println("\n[+] Finding all class requirements for course CSC-466...\n");
+      System.out.println(classes.printClassRequirements(tmp));
+      System.out.println("\n");
    }
 }
