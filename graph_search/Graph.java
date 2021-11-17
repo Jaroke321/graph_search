@@ -8,6 +8,13 @@ import java.util.Stack;
 import java.util.NoSuchElementException;
 
 /**
+ * Object definition to represent a Graph object. A graph is made up of multiple
+ * Nodes, each with a value. The Nodes are connected by Edges. Each Edge has a
+ * source value for the Node it is coming from and a destination value for the
+ * destination Node. In addition, each edge can have a weight value attached to
+ * it. This weight value will effect which shortest path is returned when
+ * shortest_path() is called.
+ * 
  * @author Jacob Keller
  * @since 11/01/2021
  * 
