@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.io.*;
 
 /**
@@ -21,22 +22,7 @@ public class Student {
     private ArrayList<String> grades = new ArrayList<String>(); // Holds the grades for each class
 
     // Create list to hold all of the weights for each letter grade.
-    static Hashtable<String, Double> gradeWeights = new Hashtable<String, Double>(12) {
-        {
-            put("A", 4.0);
-            put("A-", 3.7);
-            put("B+", 3.3);
-            put("B", 3.0);
-            put("B-", 2.7);
-            put("C+", 2.3);
-            put("C", 2.0);
-            put("C-", 1.7);
-            put("D+", 1.3);
-            put("D", 1.0);
-            put("D-", 0.7);
-            put("F", 0.0);
-        }
-    };
+    static Map<String, Double> gradeWeights = new HashMap<String, Double>();
 
     /**
      * Basic Constructor method. Reads from a provided filename that holds the
@@ -47,6 +33,22 @@ public class Student {
      */
     public Student(String filename) {
 
+        // Initialize the gradeWeight class variable if it is empty
+        if (Student.gradeWeights.isEmpty()) {
+            Student.gradeWeights.put("A", 4.0);
+            Student.gradeWeights.put("A-", 3.7);
+            Student.gradeWeights.put("B+", 3.3);
+            Student.gradeWeights.put("B", 3.0);
+            Student.gradeWeights.put("B-", 2.7);
+            Student.gradeWeights.put("C+", 2.3);
+            Student.gradeWeights.put("C", 2.0);
+            Student.gradeWeights.put("C-", 1.7);
+            Student.gradeWeights.put("D+", 1.3);
+            Student.gradeWeights.put("D", 1.0);
+            Student.gradeWeights.put("D-", 0.7);
+            Student.gradeWeights.put("F", 0.0);
+        }
+
         // Create the file object using the filename
         File inputFile = new File(filename);
         // Try to open and read from file
@@ -55,9 +57,9 @@ public class Student {
             Scanner input = new Scanner(inputFile);
 
             // Get the first two lines of the file for name and std_num
-            this.name = input.nextLine();
-            this.student_num = input.nextLine();
-            this.major = input.nextLine();
+            this.name = input.nextLine().strip();
+            this.student_num = input.nextLine().strip();
+            this.major = input.nextLine().strip();
 
             // Cycle through the file until the end
             while (input.hasNext()) {
@@ -65,9 +67,9 @@ public class Student {
                 String[] arr = line.split(","); // Split each line by ','
 
                 // Load in each value of the line to the arraylists
-                classes.add(arr[0]);
-                class_weights.add(Integer.parseInt(arr[1]));
-                grades.add(arr[2]);
+                classes.add(arr[0].strip());
+                class_weights.add(Integer.parseInt(arr[1].strip()));
+                grades.add(arr[2].strip());
 
             }
             // Close the open file
@@ -75,11 +77,10 @@ public class Student {
         } catch (FileNotFoundException e) {
             System.out.println("");
         }
-
     }
 
     /**
-     * Getter mthod to get the students name
+     * Getter method to get the students name
      * 
      * @return name as a String
      */
@@ -106,6 +107,26 @@ public class Student {
     }
 
     /**
+     * Calculates the total credits that the student has accumulated up until this
+     * point
+     * 
+     * @return The amount of credits the student has taken as an int.
+     */
+    public int totalCredits() {
+        int total = 0; // Holds the total credits completed
+        // Cycle through each class
+        for (int i = 0; i < this.class_weights.size(); i++) {
+            // Get the class grade
+            String g = this.grades.get(i);
+            // Check that the grade is not N (Currently being taken)
+            if (!g.equalsIgnoreCase("N")) {
+                total += this.class_weights.get(i);
+            }
+        }
+        return total;
+    }
+
+    /**
      * Getter method to get the weights of the classes the student has taken
      * 
      * @return The weights of the taken courses as an Arraylist of type Integer
@@ -126,7 +147,9 @@ public class Student {
         ret_str += "Name:\t" + this.name + "\n";
         ret_str += "Student Number:\t" + this.student_num + "\n";
         ret_str += "Student Major:\t" + this.major + "\n";
-        ret_str += "------------------------------";
+        ret_str += "Total Credits Taken:\t" + this.totalCredits() + "\n";
+        ret_str += "GPA:\t" + this.getGPA() + "\n";
+        ret_str += "------------------------------\n";
 
         return ret_str;
     }
@@ -164,7 +187,24 @@ public class Student {
         // Declare array to hold final list
         ArrayList<String> remaining = new ArrayList<String>();
 
-        return remaining;
+        // Cycle through each required course and see if the student has already taken
+        // it
+        for (int i = 0; i < arr.size(); i++) {
+            // Grab the current course from arr
+            String tmp = arr.get(i);
+            boolean b = contains(tmp);
+            // add to remaining courses if the student has not already taken this course
+            if (!b) {
+                remaining.add(tmp);
+            }
+        }
+
+        return remaining; // Return the remaining courses the student needs to take
+    }
+
+    public ArrayList<String> checkQualifications(ArrayList<String> arr) {
+        return arr; // TODO: complete function to only return the courses in arr that are not
+                    // already taken. If each course has been taken, return an empty list
     }
 
     /**
@@ -174,20 +214,26 @@ public class Student {
      */
     public String getGPA() {
 
-        Double gpa = 0.0; // Holds the final GPA as a Double
+        double gpa = 0.0; // Holds the final GPA as a Double
+        double count = 0.0; // Holds the sum of the credits taken
 
         // Cycle through each grade and class weight to calculate the gpa
         for (int i = 0; i < this.class_weights.size(); i++) {
             // Get both the current classes weight and the grade achieved
             int weight = this.class_weights.get(i);
             String grade = this.grades.get(i);
-            Double gradeValue = Student.gradeWeights.get(grade); // Convert grade to double value
-            // Add that value to the total gpa value
-            gpa += (gradeValue * weight);
+            // Check that the grade is valid
+            if ((!grade.equalsIgnoreCase("T")) & (!grade.equalsIgnoreCase("N"))) {
+
+                Double gradeValue = Student.gradeWeights.get(grade); // Convert grade to double value
+                // Add that value to the total gpa value and the credits to count
+                gpa += (gradeValue * weight);
+                count += weight;
+            }
         }
 
         // Divide total gpa by number of classes taken to get actual GPA
-        gpa /= this.classes.size();
+        gpa /= count;
 
         return String.valueOf(gpa);
     }
@@ -201,13 +247,35 @@ public class Student {
 
         // Declare the student object and the Graph based on the major
         Student student = new Student("jk962980.txt");
+        // Get the curriculum based on the major of the student
         String majorFile = student.getMajor() + ".txt";
         Graph g = new Graph(majorFile, " ");
+        // Print out basic info on the student
+        System.out.println(student);
 
-        // Get all of the classes needed for the major
+        // Get all courses in the curriculum and the courses the student still has to
+        // take
         ArrayList<String> curriculum = g.getAllNodes();
-        // Get all of the classes remaining until graduation
         ArrayList<String> remaining = student.getRemainingCourses(curriculum);
+        // Create a list that will hold a list of classes still needed for each class
+        ArrayList<ArrayList<String>> qualifiedList = new ArrayList<ArrayList<String>>();
+
+        // Cycle through all courses student still has to take and get all the
+        // requirements for each
+        for (int i = 0; i < remaining.size(); i++) {
+            // Get the current course in question
+            String course = remaining.get(i);
+            ArrayList<String> qualified = g.findRequiredClasses(course); // Get all course requirements
+
+            // Update qualified to only include classes not already taken
+            qualified = student.checkQualifications(qualified);
+            qualifiedList.add(qualified); // Add to qualified list
+        }
+
+        // TODO: Now that each remaining course has been found and the prerequisites for
+        // each course that have not been taken. Create a good print out to display the
+        // student info along with all of the relevant course information so that they
+        // would be able to make an informed decision.
     }
 
 }

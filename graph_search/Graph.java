@@ -1,10 +1,6 @@
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.io.*;
-import java.lang.reflect.Array;
-import java.util.Stack;
-
 import java.util.NoSuchElementException;
 
 /**
@@ -385,10 +381,9 @@ public class Graph {
     * 
     * @param course A string that represents the course number of the course to be
     *               taken.
-    * @return arraylist containing the edges that represent the classes that need
-    *         to be taken before the current course
+    * @return arraylist containing the classes required to take the course
     */
-   private ArrayList<Edge> findRequiredClasses(String course) {
+   public ArrayList<String> findRequiredClasses(String course) {
 
       // Check for valid inputs
       if (course == null || contains(course) < 0) {
@@ -397,8 +392,8 @@ public class Graph {
 
       // Create the list that will hold the final required courses and a list to hold
       // all paths that have already been searched
-      ArrayList<Edge> final_list = new ArrayList<Edge>();
-      ArrayList<Edge> searched = new ArrayList<Edge>();
+      ArrayList<String> final_list = new ArrayList<String>();
+      // ArrayList<Edge> searched = new ArrayList<Edge>();
 
       // Get the first node to search and create arraylist to store future searches
       Node n = head.get(contains(course));
@@ -416,8 +411,8 @@ public class Graph {
          for (int i = 0; i < n.getNnum(); i++) {
             Edge tmp = n.getNeighbor(i); // Get the current edge
             // If the edge is already in the final list, do not add it
-            if (!final_list.contains(tmp)) {
-               final_list.add(tmp); // Add the edge to the final list
+            if (!final_list.contains(tmp.getDest())) {
+               final_list.add(tmp.getDest()); // Add the edge to the final list
 
                // Get the node representing the destination of the edge and add it to the
                // toSearch list
@@ -439,12 +434,12 @@ public class Graph {
     *            courses that need to be taken for a specific course.
     * @return A String that will outline the required courses to take.
     */
-   private String printClassRequirements(ArrayList<Edge> arr) {
+   private String printClassRequirements(ArrayList<String> arr) {
       String final_str = "";
 
       for (int i = 0; i < arr.size(); i++) {
-         Edge tmp = arr.get(i);
-         final_str += "( " + tmp.getSource() + " , " + tmp.getDest() + " ) ==> ";
+         String tmp = arr.get(i);
+         final_str += "( " + tmp + " ) ==> ";
       }
 
       return final_str;
@@ -531,9 +526,9 @@ public class Graph {
       System.out.println("[+]Done with graph g...");
 
       // Run the scheduling functions on graph classes.
-      System.out.println("\n[+] Running all scheduling functions on classes graph...\n");
+      System.out.println("\n[+] Testing graph on the computer science curriculum on classes graph...\n");
       System.out.println(classes);
-      ArrayList<Edge> tmp = classes.findRequiredClasses("466");
+      ArrayList<String> tmp = classes.findRequiredClasses("CSC466");
       System.out.println("\n[+] Finding all class requirements for course CSC-466...\n");
       System.out.println(classes.printClassRequirements(tmp));
       System.out.println("\n");
