@@ -68,6 +68,27 @@ public class Graph {
    }
 
    /**
+    * Takes all of the Node objects in the head attribute of the Graph class and
+    * returns an ArrayList with all of their values as Strings.
+    * 
+    * @return ArrayList of type String
+    */
+   public ArrayList<String> getAllNodes() {
+
+      // Declare array to hold all node values as strings
+      ArrayList<String> arr = new ArrayList<String>();
+      Node n;
+      // Cycle through each of the nodes and add String value to arr
+      for (int i = 0; i < this.head.size(); i++) {
+         n = this.head.get(i);
+         arr.add(n.getSource());
+      }
+
+      // Return all nodes as Strings
+      return arr;
+   }
+
+   /**
     * Takes in a String that represents the value of a Node. Returns the position
     * of that node in the graph. If the Node does not exist, returns -1.
     * 

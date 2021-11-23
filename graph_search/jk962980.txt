@@ -1,5 +1,6 @@
 Jacob Keller
 962980
+comp_sci
 CHE103,3,T
 CRL103,1,T
 CSC110,3,T
