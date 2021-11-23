@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.io.*;
 
 /**
@@ -18,6 +19,24 @@ public class Student {
     private ArrayList<String> classes = new ArrayList<String>(); // Holds the classes already taken by the student
     private ArrayList<Integer> class_weights = new ArrayList<Integer>(); // Holds the weight for each class taken
     private ArrayList<String> grades = new ArrayList<String>(); // Holds the grades for each class
+
+    // Create list to hold all of the weights for each letter grade.
+    static Hashtable<String, Double> gradeWeights = new Hashtable<String, Double>(12) {
+        {
+            put("A", 4.0);
+            put("A-", 3.7);
+            put("B+", 3.3);
+            put("B", 3.0);
+            put("B-", 2.7);
+            put("C+", 2.3);
+            put("C", 2.0);
+            put("C-", 1.7);
+            put("D+", 1.3);
+            put("D", 1.0);
+            put("D-", 0.7);
+            put("F", 0.0);
+        }
+    };
 
     /**
      * Basic Constructor method. Reads from a provided filename that holds the
@@ -59,20 +78,46 @@ public class Student {
 
     }
 
+    /**
+     * Getter mthod to get the students name
+     * 
+     * @return name as a String
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Getter method to get the students number
+     * 
+     * @return Students number as a String
+     */
     public String getStudentNum() {
         return this.student_num;
     }
 
+    /**
+     * Getter method to get the students major
+     * 
+     * @return the students major as a String
+     */
     public String getMajor() {
         return this.major;
     }
 
     /**
+     * Getter method to get the weights of the classes the student has taken
+     * 
+     * @return The weights of the taken courses as an Arraylist of type Integer
+     */
+    public ArrayList<Integer> getClassWeights() {
+        return this.class_weights;
+    }
+
+    /**
      * toString method to display all information on the student.
+     * 
+     * @return String representing the Student object
      */
     public String toString() {
 
@@ -125,10 +170,26 @@ public class Student {
     /**
      * Calculates the current GPA based on the class weights and the grades recieved
      * 
-     * @return STring representing the students GPA otu of 4.0
+     * @return String representing the students GPA out of 4.0
      */
     public String getGPA() {
-        return "";
+
+        Double gpa = 0.0; // Holds the final GPA as a Double
+
+        // Cycle through each grade and class weight to calculate the gpa
+        for (int i = 0; i < this.class_weights.size(); i++) {
+            // Get both the current classes weight and the grade achieved
+            int weight = this.class_weights.get(i);
+            String grade = this.grades.get(i);
+            Double gradeValue = Student.gradeWeights.get(grade); // Convert grade to double value
+            // Add that value to the total gpa value
+            gpa += (gradeValue * weight);
+        }
+
+        // Divide total gpa by number of classes taken to get actual GPA
+        gpa /= this.classes.size();
+
+        return String.valueOf(gpa);
     }
 
     /**
