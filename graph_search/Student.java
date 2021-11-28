@@ -78,6 +78,13 @@ public class Student {
         } catch (FileNotFoundException e) {
             System.out.println("File does not exist");
         }
+
+        // Load in all of the core classes for the students major
+        String core_filename = this.major + "_core.txt";
+        this.core = loadCore(core_filename);
+        // Make sure core = only the core classes not already taken
+        this.core = this.getRemainingCourses(this.core);
+
     }
 
     /**
@@ -113,33 +120,42 @@ public class Student {
      * @param filename The filename for the file that holds all of the core classes
      *                 seperated by commas.
      */
-    public void loadCore(String filename) {
+    public ArrayList<String> loadCore(String filename) {
+        // Declare the final arraylist that will hold the core classes for the students
+        // major
+        ArrayList<String> core = new ArrayList<String>();
         File file = new File(filename);
 
+        // Try to open file, throw exception if not found
         try {
 
             Scanner input = new Scanner(file);
-            String line = input.nextLine().strip();
-            String[] arr = line.split(",");
+            String line = input.nextLine().strip(); // Read first and only line
+            String[] arr = line.split(","); // Split line to get each value
 
+            // Cycle through each value and load it into the core arraylist
             for (int i = 0; i < arr.length; i++) {
-                this.core.add(arr[i]);
+                core.add(arr[i]);
             }
 
-            input.close();
+            input.close(); // Close the file
 
         } catch (FileNotFoundException e) {
-
+            System.out.println("File Not found when trying to load core classes.");
         }
+
+        return core;
     }
 
     /**
-     * Checks if all core classes have been taken by the current student.
+     * Takes in an ArrayList of courses and returns a formatted a String. Meant to
+     * be used with Core classes for a major. Formatting will be different than a
+     * call to curriculumToString which also shows prerequisite courses.
      * 
-     * @return true if core classes are complete, false otherwise.
+     * @return A String of all the core classes
      */
-    public boolean checkCore() {
-        return true;
+    public String coreToString() {
+        return "";
     }
 
     /**
@@ -150,8 +166,24 @@ public class Student {
      * @param req       All of the pre-requisite courses for each course in
      *                  'remaining'
      */
-    public void printCourses(ArrayList<String> remaining, ArrayList<ArrayList<String>> req) {
+    public String curriculumToString(ArrayList<String> remaining, ArrayList<ArrayList<String>> req) {
 
+        // Cycle through each of the remaining classes and get the list of classes still
+        // needed for each
+        for (int i = 0; i < remaining.size(); i++) {
+            // Get both current course and the list
+            String course = remaining.get(i);
+            ArrayList<String> needed = req.get(i);
+            String courses = "";
+            for (int j = 0; j < needed.size(); j++) {
+                courses += needed.get(j) + ",";
+            }
+
+            // courses = courses.substring(0, courses.length());
+            System.out.println(course + ": " + courses);
+        }
+
+        return "";
     }
 
     /**
@@ -288,20 +320,22 @@ public class Student {
      */
     public static void main(String args[]) {
 
+        // Stage 1: Declare objects and get the filenames for data
+
         // Declare the student object and the Graph based on the major
         Student student = new Student("jk962980.txt");
         // Get the curriculum based on the major of the student
         String majorFile = student.getMajor() + ".txt";
-        String coreFile = student.getMajor() + "_core.txt"; // Get core classes file
-        // Load the core classes
-        student.loadCore(coreFile);
         Graph g = new Graph(majorFile, " ");
 
-        // Get all courses in the curriculum and the courses the student still has to
-        // take
+        // Stage 2: Load all of the data and get the resulting Arraylists
+
+        // Load all major classes, and get the classes not taken yet
+        // in major
         ArrayList<String> curriculum = g.getAllNodes();
         ArrayList<String> remaining = student.getRemainingCourses(curriculum);
-        // Create a list that will hold a list of classes still needed for each class
+        // Create a list that will hold a list of classes still needed for each
+        // remaining class
         ArrayList<ArrayList<String>> qualifiedList = new ArrayList<ArrayList<String>>();
 
         // Cycle through all courses student still has to take and get all the
@@ -316,20 +350,17 @@ public class Student {
             qualifiedList.add(qualified); // Add to qualified list
         }
 
-        // Cycle through each of the remaining classes and get the list of classes still
-        // needed for each
-        for (int i = 0; i < remaining.size(); i++) {
-            // Get both current course and the list
-            String course = remaining.get(i);
-            ArrayList<String> needed = qualifiedList.get(i);
-            String courses = "";
-            for (int j = 0; j < needed.size(); j++) {
-                courses += needed.get(j) + ",";
-            }
+        // Stage 3: Present info to user / student
 
-            // courses = courses.substring(0, courses.length());
-            System.out.println(course + ": " + courses);
-        }
+        // Print out the student, Core classes sill needed if any, and then the
+        // available courses still needed to take in the major
+        System.out.println(student); // prints basic information
+        System.out.println(student.coreToString()); // Prints all the core class information
+        System.out.println(student.curriculumToString(remaining, qualifiedList)); // Prints all of the courses available
+                                                                                  // to the student and their
+                                                                                  // prerequisite courses, this will
+                                                                                  // also include the prereqs for the
+                                                                                  // core classes above
     }
 
 }

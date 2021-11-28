@@ -523,7 +523,7 @@ public class Graph {
       System.out.println(g.width_search("1", "6") + "\n");
       System.out.println("Shortest Path Search:");
       System.out.println(g.seize_path(g.shortest_path("1", "6")) + "\n");
-      System.out.println("[+]Done with graph g...");
+      System.out.println("[+] Done with graph g...");
 
       // Run the scheduling functions on graph classes.
       System.out.println("\n[+] Testing graph on the computer science curriculum on classes graph...\n");
