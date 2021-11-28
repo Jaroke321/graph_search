@@ -20,6 +20,7 @@ public class Student {
     private ArrayList<String> classes = new ArrayList<String>(); // Holds the classes already taken by the student
     private ArrayList<Integer> class_weights = new ArrayList<Integer>(); // Holds the weight for each class taken
     private ArrayList<String> grades = new ArrayList<String>(); // Holds the grades for each class
+    private ArrayList<String> core = new ArrayList<String>(); // Holds core class requirements for major
 
     // Create list to hold all of the weights for each letter grade.
     static Map<String, Double> gradeWeights = new HashMap<String, Double>();
@@ -75,7 +76,7 @@ public class Student {
             // Close the open file
             input.close();
         } catch (FileNotFoundException e) {
-            System.out.println("");
+            System.out.println("File does not exist");
         }
     }
 
@@ -104,6 +105,53 @@ public class Student {
      */
     public String getMajor() {
         return this.major;
+    }
+
+    /**
+     * Loads all of the core classes for the major.
+     * 
+     * @param filename The filename for the file that holds all of the core classes
+     *                 seperated by commas.
+     */
+    public void loadCore(String filename) {
+        File file = new File(filename);
+
+        try {
+
+            Scanner input = new Scanner(file);
+            String line = input.nextLine().strip();
+            String[] arr = line.split(",");
+
+            for (int i = 0; i < arr.length; i++) {
+                this.core.add(arr[i]);
+            }
+
+            input.close();
+
+        } catch (FileNotFoundException e) {
+
+        }
+    }
+
+    /**
+     * Checks if all core classes have been taken by the current student.
+     * 
+     * @return true if core classes are complete, false otherwise.
+     */
+    public boolean checkCore() {
+        return true;
+    }
+
+    /**
+     * Prints all of the courses still available for the student to take along with
+     * the required courses for each of those courses.
+     * 
+     * @param remaining Each course still available for the student
+     * @param req       All of the pre-requisite courses for each course in
+     *                  'remaining'
+     */
+    public void printCourses(ArrayList<String> remaining, ArrayList<ArrayList<String>> req) {
+
     }
 
     /**
@@ -202,11 +250,6 @@ public class Student {
         return remaining; // Return the remaining courses the student needs to take
     }
 
-    public ArrayList<String> checkQualifications(ArrayList<String> arr) {
-        return arr; // TODO: complete function to only return the courses in arr that are not
-                    // already taken. If each course has been taken, return an empty list
-    }
-
     /**
      * Calculates the current GPA based on the class weights and the grades recieved
      * 
@@ -249,9 +292,10 @@ public class Student {
         Student student = new Student("jk962980.txt");
         // Get the curriculum based on the major of the student
         String majorFile = student.getMajor() + ".txt";
+        String coreFile = student.getMajor() + "_core.txt"; // Get core classes file
+        // Load the core classes
+        student.loadCore(coreFile);
         Graph g = new Graph(majorFile, " ");
-        // Print out basic info on the student
-        System.out.println(student);
 
         // Get all courses in the curriculum and the courses the student still has to
         // take
@@ -268,14 +312,24 @@ public class Student {
             ArrayList<String> qualified = g.findRequiredClasses(course); // Get all course requirements
 
             // Update qualified to only include classes not already taken
-            qualified = student.checkQualifications(qualified);
+            qualified = student.getRemainingCourses(qualified);
             qualifiedList.add(qualified); // Add to qualified list
         }
 
-        // TODO: Now that each remaining course has been found and the prerequisites for
-        // each course that have not been taken. Create a good print out to display the
-        // student info along with all of the relevant course information so that they
-        // would be able to make an informed decision.
+        // Cycle through each of the remaining classes and get the list of classes still
+        // needed for each
+        for (int i = 0; i < remaining.size(); i++) {
+            // Get both current course and the list
+            String course = remaining.get(i);
+            ArrayList<String> needed = qualifiedList.get(i);
+            String courses = "";
+            for (int j = 0; j < needed.size(); j++) {
+                courses += needed.get(j) + ",";
+            }
+
+            // courses = courses.substring(0, courses.length());
+            System.out.println(course + ": " + courses);
+        }
     }
 
 }
