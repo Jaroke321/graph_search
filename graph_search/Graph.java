@@ -295,7 +295,7 @@ public class Graph {
     * @return An Arraylist of Edge objects that will represent the shortest path on
     *         the graph between s and t.
     */
-   public ArrayList<Edge> shortest_path(String s, String t) {
+   private ArrayList<Edge> shortest_path(String s, String t) {
 
       // Check that starting point is valid
       if (s == null || contains(s) < 0) {

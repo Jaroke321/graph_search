@@ -17,10 +17,12 @@ public class Student {
     private String name; // Holds name of student
     private String student_num; // Holds the student number of the student
     private String major; // Holds the major of the student
+
     private ArrayList<String> classes = new ArrayList<String>(); // Holds the classes already taken by the student
     private ArrayList<Integer> class_weights = new ArrayList<Integer>(); // Holds the weight for each class taken
     private ArrayList<String> grades = new ArrayList<String>(); // Holds the grades for each class
     private ArrayList<String> core = new ArrayList<String>(); // Holds core class requirements for major
+    Graph curriculum;
 
     // Create list to hold all of the weights for each letter grade.
     static Map<String, Double> gradeWeights = new HashMap<String, Double>();
@@ -80,11 +82,14 @@ public class Student {
         }
 
         // Load in all of the core classes for the students major
-        String core_filename = this.major + "_core.txt";
-        this.core = loadCore(core_filename);
+        filename = this.major + "_core.txt";
+        this.core = this.loadCoreClasses(filename);
         // Make sure core = only the core classes not already taken
         this.core = this.getRemainingCourses(this.core);
 
+        // Load up the total curriculum based on the students major
+        filename = this.major + ".txt";
+        this.curriculum = new Graph(filename, " ");
     }
 
     /**
@@ -120,7 +125,7 @@ public class Student {
      * @param filename The filename for the file that holds all of the core classes
      *                 seperated by commas.
      */
-    public ArrayList<String> loadCore(String filename) {
+    public ArrayList<String> loadCoreClasses(String filename) {
         // Declare the final arraylist that will hold the core classes for the students
         // major
         ArrayList<String> core = new ArrayList<String>();
@@ -159,30 +164,11 @@ public class Student {
     }
 
     /**
-     * Prints all of the courses still available for the student to take along with
-     * the required courses for each of those courses.
      * 
-     * @param remaining Each course still available for the student
-     * @param req       All of the pre-requisite courses for each course in
-     *                  'remaining'
+     * @param req
+     * @return
      */
-    public String curriculumToString(ArrayList<String> remaining, ArrayList<ArrayList<String>> req) {
-
-        // Cycle through each of the remaining classes and get the list of classes still
-        // needed for each
-        for (int i = 0; i < remaining.size(); i++) {
-            // Get both current course and the list
-            String course = remaining.get(i);
-            ArrayList<String> needed = req.get(i);
-            String courses = "";
-            for (int j = 0; j < needed.size(); j++) {
-                courses += needed.get(j) + ",";
-            }
-
-            // courses = courses.substring(0, courses.length());
-            System.out.println(course + ": " + courses);
-        }
-
+    public String curriculumToString(ArrayList<ArrayList<String>> req) {
         return "";
     }
 
@@ -192,7 +178,7 @@ public class Student {
      * 
      * @return The amount of credits the student has taken as an int.
      */
-    public int totalCredits() {
+    public int calculateCredits() {
         int total = 0; // Holds the total credits completed
         // Cycle through each class
         for (int i = 0; i < this.class_weights.size(); i++) {
@@ -227,11 +213,31 @@ public class Student {
         ret_str += "Name:\t" + this.name + "\n";
         ret_str += "Student Number:\t" + this.student_num + "\n";
         ret_str += "Student Major:\t" + this.major + "\n";
-        ret_str += "Total Credits Taken:\t" + this.totalCredits() + "\n";
-        ret_str += "GPA:\t" + this.getGPA() + "\n";
+        ret_str += "Total Credits Taken:\t" + this.calculateCredits() + "\n";
+        ret_str += "GPA:\t" + this.calculateGPA() + "\n";
         ret_str += "------------------------------\n";
 
         return ret_str;
+    }
+
+    /**
+     * 
+     */
+    public void showAll() {
+
+        // Get each course in the curriculum and the courses that are still required to
+        // take it
+        ArrayList<ArrayList<String>> remaining_curriculum = this.calculateCurriclum();
+
+        // Print basic info about the student
+        System.out.print(this.toString());
+
+        // Print all of the info about core classes
+        System.out.print(this.coreToString());
+
+        // Print all of the info about about the ramining curriculum
+        System.out.print(this.curriculumToString(remaining_curriculum));
+
     }
 
     /**
@@ -264,6 +270,7 @@ public class Student {
      *         for the student to graduate.
      */
     public ArrayList<String> getRemainingCourses(ArrayList<String> arr) {
+
         // Declare array to hold final list
         ArrayList<String> remaining = new ArrayList<String>();
 
@@ -272,9 +279,9 @@ public class Student {
         for (int i = 0; i < arr.size(); i++) {
             // Grab the current course from arr
             String tmp = arr.get(i);
-            boolean b = contains(tmp);
+            boolean taken = contains(tmp);
             // add to remaining courses if the student has not already taken this course
-            if (!b) {
+            if (!taken) {
                 remaining.add(tmp);
             }
         }
@@ -283,11 +290,43 @@ public class Student {
     }
 
     /**
+     * 
+     * @return
+     */
+    public ArrayList<ArrayList<String>> calculateCurriclum() {
+
+        // Load all major classes, and get the classes not taken yet
+        // in major
+        ArrayList<String> curriculum = this.curriculum.getAllNodes();
+        ArrayList<String> remaining = this.getRemainingCourses(curriculum);
+        // Create a list that will hold a list of classes still needed for each
+        // remaining class
+        ArrayList<ArrayList<String>> qualifiedList = new ArrayList<ArrayList<String>>();
+
+        // Cycle through all courses student still has to take and get all the
+        // requirements for each
+        for (int i = 0; i < remaining.size(); i++) {
+            // Get the current course in question
+            String course = remaining.get(i);
+            ArrayList<String> qualified = new ArrayList<String>();
+
+            qualified.addAll(this.curriculum.findRequiredClasses(course)); // Get all course requirements
+
+            // Update qualified to only include classes not already taken
+            qualified = this.getRemainingCourses(qualified);
+            qualified.add(0, course); // Make the first element the course in question
+            qualifiedList.add(qualified); // Add to qualified list
+        }
+
+        return qualifiedList;
+    }
+
+    /**
      * Calculates the current GPA based on the class weights and the grades recieved
      * 
      * @return String representing the students GPA out of 4.0
      */
-    public String getGPA() {
+    public String calculateGPA() {
 
         double gpa = 0.0; // Holds the final GPA as a Double
         double count = 0.0; // Holds the sum of the credits taken
@@ -320,47 +359,11 @@ public class Student {
      */
     public static void main(String args[]) {
 
-        // Stage 1: Declare objects and get the filenames for data
-
-        // Declare the student object and the Graph based on the major
+        // Declare the student object using a text file
         Student student = new Student("jk962980.txt");
-        // Get the curriculum based on the major of the student
-        String majorFile = student.getMajor() + ".txt";
-        Graph g = new Graph(majorFile, " ");
 
-        // Stage 2: Load all of the data and get the resulting Arraylists
-
-        // Load all major classes, and get the classes not taken yet
-        // in major
-        ArrayList<String> curriculum = g.getAllNodes();
-        ArrayList<String> remaining = student.getRemainingCourses(curriculum);
-        // Create a list that will hold a list of classes still needed for each
-        // remaining class
-        ArrayList<ArrayList<String>> qualifiedList = new ArrayList<ArrayList<String>>();
-
-        // Cycle through all courses student still has to take and get all the
-        // requirements for each
-        for (int i = 0; i < remaining.size(); i++) {
-            // Get the current course in question
-            String course = remaining.get(i);
-            ArrayList<String> qualified = g.findRequiredClasses(course); // Get all course requirements
-
-            // Update qualified to only include classes not already taken
-            qualified = student.getRemainingCourses(qualified);
-            qualifiedList.add(qualified); // Add to qualified list
-        }
-
-        // Stage 3: Present info to user / student
-
-        // Print out the student, Core classes sill needed if any, and then the
-        // available courses still needed to take in the major
-        System.out.println(student); // prints basic information
-        System.out.println(student.coreToString()); // Prints all the core class information
-        System.out.println(student.curriculumToString(remaining, qualifiedList)); // Prints all of the courses available
-                                                                                  // to the student and their
-                                                                                  // prerequisite courses, this will
-                                                                                  // also include the prereqs for the
-                                                                                  // core classes above
+        // Print all of the info to the user
+        student.showAll();
     }
 
 }
