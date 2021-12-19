@@ -45,8 +45,43 @@ public class Graph {
 
          input.close();
       } catch (FileNotFoundException e) {
-         System.out.println("file reading fails.");
+         System.out.println("[!] File cannot be found.");
       }
+   }
+
+   /**
+    * Constructor method that will read from a file assuming no weights are given
+    * to each value. The weight used here will be 1 for each edge between nodes.
+    * 
+    * @param filename The file where all of the data is held.
+    */
+   public Graph(String filename) {
+
+      // Make a file object
+      File inputFile = new File(filename);
+      // Attempt to read data from the File
+      try {
+         Scanner input = new Scanner(inputFile);
+         // Go to the end of the file
+         while (input.hasNext()) {
+
+            String line = input.nextLine();
+            String[] info = line.split(" ");
+            Node currentN = new Node(info[0]);
+            // Add each edge to the current node
+            for (int i = 1; i < info.length; i++) {
+               Edge e = new Edge(currentN.getSource(), info[i], 1);
+               currentN.addEdge(e);
+            }
+            // Add the node to the head list
+            head.add(currentN);
+         }
+         input.close(); // Close file
+         // Catch exceptions here from reading the file
+      } catch (FileNotFoundException e) {
+         System.out.println("[!] File cannot be found.");
+      }
+
    }
 
    /**
