@@ -16,7 +16,10 @@ public class Scheduler {
 
     // Class lookup
     TreeMap<String, ArrayList<String>> curriculum = new TreeMap<String, ArrayList<String>>();
+    // Declare class variables
     int maxPerSemester; // Defines how many courses per semester the user can manage
+    String filename; // Filename to read data from
+    boolean auto_complete;
 
     /**
      * Constructor method
@@ -25,15 +28,35 @@ public class Scheduler {
      * @param maxPerSemester Integer that represents the maximum number of classes
      *                       per semester that the student can take
      */
-    public Scheduler(String filename, int maxPerSemester) {
+    public Scheduler(String filename, int maxPerSemester, boolean autoComplete) {
 
         // Set the maximum number of classes per semester the user can take
         if (maxPerSemester > 0) {
             this.maxPerSemester = maxPerSemester;
         }
 
+        // Set instance variables
+        this.filename = filename;
+        this.auto_complete = autoComplete;
+        // Load in all of the data
+        this.loadData();
+    }
+
+    /**
+     * No- parms constructor
+     */
+    public Scheduler() {
+        // Intentionally blank
+    }
+
+    /**
+     * Attempts to use current values for filename, auto_complete, and
+     * maxPerSemester to load in new data
+     */
+    public void loadData() {
+
         // Initialize Fiel object with file name
-        File inputFile = new File(filename);
+        File inputFile = new File(this.filename);
 
         try {
             // read from file into curriculum
@@ -65,6 +88,35 @@ public class Scheduler {
             System.out.println("[!] ERROR: That file cannot be found...");
         }
 
+    }
+
+    /**
+     * Setter for the maxPerSemester class variable
+     * 
+     * @param val An integer that represents the maximum number of courses that the
+     *            student can take
+     */
+    public void setMaxPerSemester(int val) {
+        this.maxPerSemester = val;
+    }
+
+    /**
+     * Setter for the filename class variable
+     * 
+     * @param val A String that represents the filename of the file that holds all
+     *            of the class data
+     */
+    public void setFileName(String val) {
+        this.filename = val;
+    }
+
+    /**
+     * Setter for the auto_complete class variable
+     * 
+     * @param val A boolean value
+     */
+    public void setAutoComplete(boolean val) {
+        this.auto_complete = val;
     }
 
     /**
@@ -192,6 +244,8 @@ public class Scheduler {
 
         ArrayList<String> picked = new ArrayList<String>();
 
+        // TODO: Get user input if auto_complete is false
+
         // Less options than the student can take in a semester
         if (options.size() <= this.maxPerSemester) {
             return picked = options;
@@ -235,17 +289,54 @@ public class Scheduler {
     }
 
     /**
+     * Generic help function utilized at the command line.
+     */
+    public void help() {
+        System.out.println("Help function");
+    }
+
+    /**
      * Driver function
      * 
-     * @param args
+     * @param args First argument is a boolean value, true if you want auto picker
+     *             for courses, false for manual.
+     *             The second argument is an integer that will represent the maximum
+     *             number of courses the user can take in a semester.
      */
     public static void main(String[] args) {
 
-        // Default input file for now
+        // Declare default values for auto_complete, maxPerSemester, and filename
+        boolean auto_complete = false;
+        int maxPerSemester = 5;
         String filename = "comp_sci.txt";
-        int maxPerSemester = 5; // Maximum number of classes to take during a semester
-        // Create the Scheduler object
-        Scheduler scheduler = new Scheduler(filename, maxPerSemester);
+
+        Scheduler scheduler = new Scheduler(); // scheduler object declaration
+
+        // Get user input for these values if they exist
+        try {
+            if (args.length == 2) { // Filename
+                filename = args[1];
+            } else if (args.length == 3) { // Filename and auto-complete
+                filename = args[1];
+                auto_complete = Boolean.parseBoolean(args[2]);
+            } else if (args.length == 4) { // Filename, auto-complete, and maxPerSemester values
+                filename = args[1];
+                auto_complete = Boolean.parseBoolean(args[2]);
+                maxPerSemester = Integer.parseInt(args[3]);
+            }
+
+            // Set all of the appropriate values for the scheduler and load the data
+            scheduler.setFileName(filename);
+            scheduler.setMaxPerSemester(maxPerSemester);
+            scheduler.setAutoComplete(auto_complete);
+
+            scheduler.loadData();
+
+            // Set all values for the scheduler object
+        } catch (Exception e) {
+            scheduler.help();
+        }
+
         // Show the curriculum as it is loaded
         // Make the schedule
         ArrayList<ArrayList<String>> schedule = scheduler.makeSchedule();
