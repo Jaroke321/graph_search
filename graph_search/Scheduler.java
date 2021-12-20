@@ -1,5 +1,8 @@
 import java.util.Scanner;
 import java.util.TreeMap;
+
+import javax.swing.plaf.OptionPaneUI;
+
 import java.util.Map;
 import java.util.ArrayList;
 import java.io.*;
@@ -233,6 +236,63 @@ public class Scheduler {
     }
 
     /**
+     * Takes in options for current courses that are available to the user and
+     * prints them out so that the user can pick them.
+     * 
+     * @param options Arraylist of Strings that hold al of the available options
+     */
+    public void printOptions(ArrayList<String> options) {
+
+        System.out.println("COURSES YOU QUALIFY FOR:");
+        System.out.println("|   OPTION NUMBER   |   COURSE NAME   |");
+        for (int i = 0; i < options.size(); i++) {
+            System.out.println("   |   " + String.valueOf(i + 1) + "   |   " + options.get(i) + "   |   ");
+        }
+    }
+
+    /**
+     * Gets user input so that they can pick their own classes
+     * 
+     * @return An Arraylist of type String of all of the options that the user has
+     *         picked.
+     */
+    public ArrayList<String> getUserInput(ArrayList<String> options) {
+        // Holds the final picks of the user
+        ArrayList<String> userPicks = new ArrayList<String>();
+        Scanner input = new Scanner(System.in); // Reads the input from the user
+
+        // Get the users input
+        System.out.print("Which courses would you like to take? (i.e. '1 2 3') ('q' to quit) > ");
+        String picks = input.nextLine();
+
+        // Check for exit code
+        if (picks.equalsIgnoreCase("q")) {
+            System.out.println("[+] Goodbye!");
+            System.exit(0);
+        }
+
+        // Check the users input
+        try {
+
+            String[] all_picks = picks.split(" "); // Split all of the picks
+            // Go through each to check for validity
+            for (int i = 0; i < all_picks.length; i++) {
+                int single_pick = Integer.parseInt(all_picks[i]);
+                String tmp = options.get(single_pick);
+                userPicks.add(tmp);
+            }
+
+        } catch (Exception e) { // Something went wrong when checking the user input
+            System.out.println("[!] ERROR: something was wrong with your input. Try again.");
+            this.getUserInput(options);
+        }
+
+        // Close scanner and return the users picks
+        input.close();
+        return userPicks;
+    }
+
+    /**
      * Picks courses for a semester given all available courses the student
      * qualifies for. Will not exceed the value for the maximum number of courses
      * the user can take in a semester.
@@ -244,13 +304,20 @@ public class Scheduler {
 
         ArrayList<String> picked = new ArrayList<String>();
 
-        // TODO: Get user input if auto_complete is false
+        // if auto_complete is true, pick for user. otherwise manually pick
+        if (this.auto_complete) {
+            // Less options than the student can take in a semester
+            if (options.size() <= this.maxPerSemester) {
+                picked = options;
+            } else { // More options than can be taken
+                picked.addAll(options.subList(0, this.maxPerSemester));
+            }
 
-        // Less options than the student can take in a semester
-        if (options.size() <= this.maxPerSemester) {
-            return picked = options;
-        } else { // More options than can be taken
-            picked.addAll(options.subList(0, this.maxPerSemester));
+        } else { // Manual
+
+            this.printOptions(options); // print options
+            picked = this.getUserInput(options); // get user input
+
         }
 
         return picked;
@@ -335,6 +402,7 @@ public class Scheduler {
             // Set all values for the scheduler object
         } catch (Exception e) {
             scheduler.help();
+            System.exit(0);
         }
 
         // Show the curriculum as it is loaded
