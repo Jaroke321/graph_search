@@ -1,8 +1,5 @@
 import java.util.Scanner;
 import java.util.TreeMap;
-
-import javax.swing.plaf.OptionPaneUI;
-
 import java.util.Map;
 import java.util.ArrayList;
 import java.io.*;
@@ -22,7 +19,7 @@ public class Scheduler {
     // Declare class variables
     int maxPerSemester; // Defines how many courses per semester the user can manage
     String filename; // Filename to read data from
-    boolean auto_complete;
+    boolean auto_complete; // Used to determine if user input is used
 
     /**
      * Constructor method
@@ -263,7 +260,7 @@ public class Scheduler {
 
         // Get the users input
         System.out.print("Which courses would you like to take? (i.e. '1 2 3') ('q' to quit) > ");
-        String picks = input.nextLine();
+        String picks = input.nextLine().strip();
 
         // Check for exit code
         if (picks.equalsIgnoreCase("q")) {
@@ -275,11 +272,16 @@ public class Scheduler {
         try {
 
             String[] all_picks = picks.split(" "); // Split all of the picks
-            // Go through each to check for validity
-            for (int i = 0; i < all_picks.length; i++) {
-                int single_pick = Integer.parseInt(all_picks[i]);
-                String tmp = options.get(single_pick);
-                userPicks.add(tmp);
+            int count = 0; // Count the number of courses they are picking
+
+            // Go until max courses allowed or all picks is empty
+            while ((count <= this.maxPerSemester) || (count == all_picks.length)) {
+
+                int single_pick = Integer.parseInt(all_picks[count - 1]); // Get the pick as an integer
+                String course = options.get(single_pick); // Get the course name from the options list
+                userPicks.add(course); // Add course to picked courses for the semester
+                count++; // Increment count to move forward
+
             }
 
         } catch (Exception e) { // Something went wrong when checking the user input
