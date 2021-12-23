@@ -89,7 +89,7 @@ public class Student {
 
         // Load up the total curriculum based on the students major
         filename = this.major + ".txt";
-        this.curriculum = new Graph(filename, " ");
+        this.curriculum = new Graph(filename);
     }
 
     /**
@@ -153,24 +153,117 @@ public class Student {
     }
 
     /**
-     * Takes in an ArrayList of courses and returns a formatted a String. Meant to
-     * be used with Core classes for a major. Formatting will be different than a
-     * call to curriculumToString which also shows prerequisite courses.
+     * coreToString creates and returns a String that will show the user all of the
+     * remaining core classes that they still need to take for there major. This is
+     * based off of the major of the student and the classes that they have already
+     * taken.
      * 
-     * @return A String of all the core classes
+     * @return A String of all the core classes still needed by th student
      */
     public String coreToString() {
-        return "";
+
+        // Build final string using StringBuilder
+        StringBuilder sb = new StringBuilder();
+
+        // Return completed message if all core classes have been taken
+        if (this.core.isEmpty()) {
+            sb.append("\n====================================\n");
+            sb.append("* ALL CORE CLASSES HAVE BEEN TAKEN *\n");
+            sb.append("====================================\n\n\n");
+
+            return sb.toString();
+        }
+
+        sb.append("\n================================\n");
+        sb.append("|  CORE CLASSES STILL NEEDED:  |\n");
+        sb.append("|==============================|\n");
+
+        // Cycle through remaining core classes and print the ones still needed
+        for (int i = 0; i < this.core.size(); i++) {
+
+            String single_class = this.core.get(i); // Get each core class still needed
+
+            sb.append("|            ");
+            sb.append(single_class);
+            sb.append("            |\n");
+            sb.append("|------------------------------|\n");
+
+        }
+
+        sb.append("\n"); // added spaces for readability
+
+        return sb.toString();
     }
 
     /**
+     * curriculumToString will create a return a String that will contain all of the
+     * remaining courses the user still needs for their major. In addition, for each
+     * of these courses it will show all of the prerequisite courses still needed
+     * for each of the classes. This will allow the user to make a more informed
+     * decision.
      * 
-     * @param req
-     * @return
+     * @param req An ArrayList containing ArrayLists of Strings. Each ArrayList is a
+     *            class and its prerequisites
+     * @return A String to print out all of the information to the user in a readble
+     *         format.
      */
     public String curriculumToString(ArrayList<ArrayList<String>> req) {
-        return "";
-    }
+
+        // BUild final string using stringbuilder
+        StringBuilder sb = new StringBuilder();
+        // Borders for the header and in between lines
+        String border = "===========================================================================================\n";
+        String bottomBorder = "|-----------------------------------------------------------------------------------------|\n";
+
+        // Main Header
+        sb.append(border);
+        sb.append("|   \t\t\t\t\tCURRICULUM\t\t\t\t\t  |\n");
+        sb.append(border);
+
+        int width = bottomBorder.length(); // Used to create more consistent width for readout
+
+        // Column names
+        sb.append("|     Course Name    |      \t\t\tPre reqs\t\t\t\t  |\n");
+        sb.append(bottomBorder);
+
+        // Go through each course in req and add each line to stringbuilder
+        for (int i = 0; i < req.size(); i++) {
+
+            String current_line = "|       ";
+
+            // Get the current course and its prereqs
+            ArrayList<String> course = req.get(i);
+
+            current_line += course.get(0); // First value in the list is the course to be taken
+            current_line += "       |   ";
+
+            // Add all of the prereq courses to the string
+            for (int j = 1; j < course.size() - 1; j++) {
+                String prereq = course.get(j);
+                current_line += prereq;
+                current_line += ", ";
+            }
+
+            // Add the last prereq ot the line if applicable
+            if (course.size() > 1) {
+                current_line += course.get(course.size() - 1);
+            }
+
+            // Make the current line the same width as the table
+            while (current_line.length() < (width - 2)) {
+                current_line += " ";
+            }
+
+            current_line += "|\n";
+            // Add the line to the stringbuilder
+            sb.append(current_line);
+            sb.append(bottomBorder);
+
+        } // END OUTER FOR
+
+        // Return the final string
+        return sb.toString();
+    } // END METHOD
 
     /**
      * Calculates the total credits that the student has accumulated up until this
@@ -360,10 +453,16 @@ public class Student {
     public static void main(String args[]) {
 
         // Declare the student object using a text file
-        Student student = new Student("jk962980.txt");
+        Student student = new Student("empty_student.txt");
+
+        ArrayList<ArrayList<String>> remaining_curriculum = student.calculateCurriclum();
+
+        System.out.println(student.coreToString());
+
+        System.out.println(student.curriculumToString(remaining_curriculum));
 
         // Print all of the info to the user
-        student.showAll();
+        // student.showAll();
     }
 
 }

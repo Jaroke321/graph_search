@@ -1,0 +1,9 @@
+Jacob Keller
+962980
+comp_sci
+CSC141,3,A
+CSC142,3,B
+MAT151,3,A-
+CHE101,3,A
+CSC220,3,A
+CSC231,3,A

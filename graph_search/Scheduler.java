@@ -255,7 +255,7 @@ public class Scheduler {
             sb.append("      ");
             sb.append(options.get(i));
             sb.append("     |\n");
-            sb.append("|_____________________________________|\n");
+            sb.append("|-------------------------------------|\n");
         }
 
         // Print the stringbuilder
@@ -399,15 +399,15 @@ public class Scheduler {
 
         // Get user input for these values if they exist
         try {
-            if (args.length == 2) { // Filename
-                filename = args[1];
-            } else if (args.length == 3) { // Filename and auto-complete
-                filename = args[1];
-                auto_complete = Boolean.parseBoolean(args[2]);
-            } else if (args.length == 4) { // Filename, auto-complete, and maxPerSemester values
-                filename = args[1];
-                auto_complete = Boolean.parseBoolean(args[2]);
-                maxPerSemester = Integer.parseInt(args[3]);
+            if (args.length == 1) { // Filename
+                filename = args[0];
+            } else if (args.length == 2) { // Filename and auto-complete
+                filename = args[0];
+                auto_complete = Boolean.parseBoolean(args[1]);
+            } else if (args.length == 3) { // Filename, auto-complete, and maxPerSemester values
+                filename = args[0];
+                auto_complete = Boolean.parseBoolean(args[1]);
+                maxPerSemester = Integer.parseInt(args[2]);
             }
 
             // Set all of the appropriate values for the scheduler and load the data
@@ -428,6 +428,5 @@ public class Scheduler {
         ArrayList<ArrayList<String>> schedule = scheduler.makeSchedule();
         scheduler.showSchedule(schedule); // Display the schedule
 
-    }
-
-}
+    } // END MAIN
+} // END SCHEDULER
