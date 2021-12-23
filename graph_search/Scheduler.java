@@ -226,8 +226,6 @@ public class Scheduler {
             }
         }
 
-        // System.out.println("OPTIONS:");
-        // System.out.println(options);
         return options;
 
     }
@@ -240,11 +238,28 @@ public class Scheduler {
      */
     public void printOptions(ArrayList<String> options) {
 
-        System.out.println("COURSES YOU QUALIFY FOR:");
-        System.out.println("|   OPTION NUMBER   |   COURSE NAME   |");
+        StringBuilder sb = new StringBuilder("\nCOURSES YOU QUALIFY FOR:\n\n");
+        sb.append("=======================================\n");
+        sb.append("|   OPTION NUMBER   |   COURSE NAME   |\n");
+        sb.append("|=====================================|\n");
+
         for (int i = 0; i < options.size(); i++) {
-            System.out.println("   |   " + String.valueOf(i + 1) + "   |   " + options.get(i) + "   |   ");
+            sb.append("|        ");
+            if ((i + 1) < 10) { // Keeps formatting consistent
+                sb.append(i + 1);
+                sb.append("          |");
+            } else {
+                sb.append(i + 1);
+                sb.append("         |");
+            }
+            sb.append("      ");
+            sb.append(options.get(i));
+            sb.append("     |\n");
+            sb.append("|_____________________________________|\n");
         }
+
+        // Print the stringbuilder
+        System.out.println(sb.toString());
     }
 
     /**
@@ -259,7 +274,7 @@ public class Scheduler {
         Scanner input = new Scanner(System.in); // Reads the input from the user
 
         // Get the users input
-        System.out.print("Which courses would you like to take? (i.e. '1 2 3') ('q' to quit) > ");
+        System.out.print("Which courses would you like to take? (i.e. '1 2 3') ('q' to quit) /> ");
         String picks = input.nextLine().strip();
 
         // Check for exit code
@@ -275,10 +290,10 @@ public class Scheduler {
             int count = 0; // Count the number of courses they are picking
 
             // Go until max courses allowed or all picks is empty
-            while ((count <= this.maxPerSemester) || (count == all_picks.length)) {
+            while ((count < this.maxPerSemester) && (count != all_picks.length)) {
 
-                int single_pick = Integer.parseInt(all_picks[count - 1]); // Get the pick as an integer
-                String course = options.get(single_pick); // Get the course name from the options list
+                int single_pick = Integer.parseInt(all_picks[count]); // Get the pick as an integer
+                String course = options.get(single_pick - 1); // Get the course name from the options list
                 userPicks.add(course); // Add course to picked courses for the semester
                 count++; // Increment count to move forward
 
@@ -286,11 +301,9 @@ public class Scheduler {
 
         } catch (Exception e) { // Something went wrong when checking the user input
             System.out.println("[!] ERROR: something was wrong with your input. Try again.");
-            this.getUserInput(options);
+            userPicks.clear(); // Clear userPicks and return an empty list
         }
 
-        // Close scanner and return the users picks
-        input.close();
         return userPicks;
     }
 
@@ -345,10 +358,13 @@ public class Scheduler {
             // Get the courses for the current semester
             ArrayList<String> current_semester = pickCourses(options);
 
-            schedule.add(current_semester); // Add this semester to the schedule
-            taken.addAll(current_semester); // Add this semesters courses to the taken list
-            // System.out.println("TAKEN:");
-            // System.out.println(taken);
+            // Pick courses returns an empty list if there was a problem getting user input
+            if (!current_semester.isEmpty()) {
+
+                schedule.add(current_semester); // Add this semester to the schedule
+                taken.addAll(current_semester); // Add this semesters courses to the taken list
+
+            }
 
             options = getOptions(taken); // Get new options for the next semester
         }
