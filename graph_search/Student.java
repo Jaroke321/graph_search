@@ -21,8 +21,9 @@ public class Student {
     private ArrayList<String> classes = new ArrayList<String>(); // Holds the classes already taken by the student
     private ArrayList<Integer> class_weights = new ArrayList<Integer>(); // Holds the weight for each class taken
     private ArrayList<String> grades = new ArrayList<String>(); // Holds the grades for each class
+
     private ArrayList<String> core = new ArrayList<String>(); // Holds core class requirements for major
-    Graph curriculum;
+    Graph curriculum; // Holds teh curriculum for the student based on major
 
     // Create list to hold all of the weights for each letter grade.
     static Map<String, Double> gradeWeights = new HashMap<String, Double>();
@@ -78,7 +79,7 @@ public class Student {
             // Close the open file
             input.close();
         } catch (FileNotFoundException e) {
-            System.out.println("File does not exist");
+            System.out.println("[!] File does not exist");
         }
 
         // Load in all of the core classes for the students major
@@ -99,6 +100,14 @@ public class Student {
      */
     public String getName() {
         return this.name;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public ArrayList<String> getClasses() {
+        return this.classes;
     }
 
     /**
@@ -167,14 +176,14 @@ public class Student {
 
         // Return completed message if all core classes have been taken
         if (this.core.isEmpty()) {
-            sb.append("\n====================================\n");
+            sb.append("\n\n====================================\n");
             sb.append("* ALL CORE CLASSES HAVE BEEN TAKEN *\n");
             sb.append("====================================\n\n\n");
 
             return sb.toString();
         }
 
-        sb.append("\n================================\n");
+        sb.append("\n\n================================\n");
         sb.append("|  CORE CLASSES STILL NEEDED:  |\n");
         sb.append("|==============================|\n");
 
@@ -446,6 +455,16 @@ public class Student {
     }
 
     /**
+     * This method takes an ArrayList representing new courses that the student
+     * plans on taking and adds them to the classes variable.
+     * 
+     * @param new_courses
+     */
+    public void update(ArrayList<String> new_courses) {
+
+    }
+
+    /**
      * Driver function
      * 
      * @param args command line arguments
@@ -453,7 +472,7 @@ public class Student {
     public static void main(String args[]) {
 
         // Declare the student object using a text file
-        Student student = new Student("empty_student.txt");
+        Student student = new Student("jk962980.txt");
 
         ArrayList<ArrayList<String>> remaining_curriculum = student.calculateCurriclum();
 

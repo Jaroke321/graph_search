@@ -272,15 +272,15 @@ public class Scheduler {
         // Holds the final picks of the user
         ArrayList<String> userPicks = new ArrayList<String>();
         Scanner input = new Scanner(System.in); // Reads the input from the user
+        boolean quit = false; // Flag for if the user wants to quit
 
         // Get the users input
-        System.out.print("Which courses would you like to take? (i.e. '1 2 3') ('q' to quit) /> ");
+        System.out.print("Choose course #'s seperated by a space ('q' to quit) /> ");
         String picks = input.nextLine().strip();
 
         // Check for exit code
-        if (picks.equalsIgnoreCase("q")) {
-            System.out.println("[+] Goodbye!");
-            System.exit(0);
+        if (picks.strip().equalsIgnoreCase("q")) {
+            quit = true; // Set falg to true so the user can quit
         }
 
         // Check the users input
@@ -300,6 +300,13 @@ public class Scheduler {
             }
 
         } catch (Exception e) { // Something went wrong when checking the user input
+            // Check for quit flag
+            if (quit) {
+                userPicks.add("q");
+            } else { // Something is actually wrong with the input
+                System.out.println("[!] ERROR: something was wrong with your input. Try again.");
+                userPicks.clear(); // Clear userPicks and return an empty list
+            }
             System.out.println("[!] ERROR: something was wrong with your input. Try again.");
             userPicks.clear(); // Clear userPicks and return an empty list
         }
