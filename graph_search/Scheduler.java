@@ -307,8 +307,7 @@ public class Scheduler {
                 System.out.println("[!] ERROR: something was wrong with your input. Try again.");
                 userPicks.clear(); // Clear userPicks and return an empty list
             }
-            System.out.println("[!] ERROR: something was wrong with your input. Try again.");
-            userPicks.clear(); // Clear userPicks and return an empty list
+
         }
 
         return userPicks;

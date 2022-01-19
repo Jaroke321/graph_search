@@ -72,6 +72,7 @@ public class Main {
 
         // Initialize variable used in main function
         ArrayList<String> options; // Holds the current semesters options for the user
+        ArrayList<String> taken; // Holds all the courses already taken by the student
         ArrayList<ArrayList<String>> final_schedule = new ArrayList<ArrayList<String>>(); // Holds each semester as an
                                                                                           // ArrayList
 
@@ -112,14 +113,16 @@ public class Main {
             System.exit(0);
         }
 
-        // Update the taken variable in order to cerate an accurate starting point.
-        main.addTaken(student.getClasses());
+        // Update the state of taken at the beginning
+        taken = student.getClasses();
+
         // Print the core classes and the degree progress of the student including
         // prereqs of courses
-        main.showProgress(student);
+        student.showProgress();
         // Get all of the options for the current semester given the courses already
         // taken
-        options = scheduler.getOptions(main.getTaken());
+        options = scheduler.getOptions(taken);
+
         // Go until options are empty
         while (!options.isEmpty()) {
             // Have the user pick their courses
@@ -127,17 +130,23 @@ public class Main {
             // pickCourses returns an empty list for errors
             if (!picked.isEmpty()) {
 
-                final_schedule.add(picked);
-                main.addTaken(picked);
+                if (picked.get(0).strip().equalsIgnoreCase("q")) { // pickCourses returns 'q' if the user wants to quit
+                    // Handle the user quitting and potentially saving the output
+                    System.out.println("User wants to quit");
+                    System.exit(0);
+                }
 
-            } else if (picked.get(0).strip().equalsIgnoreCase("q")) { // pickCourses returns 'q' if user wants to quit
-                // Handle the user quitting here and ask if they want to save picks
-                System.out.println("User wants to quit");
-                System.exit(0);
+                // Update final_schedule, taken courses, and the student
+                final_schedule.add(picked);
+                taken.addAll(picked);
+                student.update(picked);
+
             }
 
+            // Show the updated progress of the student after each semester
+            student.showProgress();
             // Update options for the next semester
-            options = scheduler.getOptions(main.getTaken());
+            options = scheduler.getOptions(taken);
 
         } // END WHILE
 

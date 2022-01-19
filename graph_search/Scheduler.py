@@ -6,29 +6,44 @@ class Scheduler:
     def loadData(self):
         pass 
 
-    def setMaxPerSemester(self):
-        pass
+    def setMaxPerSemester(self, val):
+        self.setMaxPerSemester = val
 
-    def setFilename(self):
-        pass 
+    def setFilename(self, filename):
+        self.filename = filename
 
-    def setAutoComplete(self):
-        pass 
+    def setAutoComplete(self, val):
+        self.auto_complete = val
 
     def showCurriculum(self):
         pass 
 
     def showSchedule(self):
-        pass 
+        schedule = self.makeSchedule()
+        self.showSchedule(schedule)
 
     def showSchedule(self, arr):
         pass 
 
     def isSatisfied(self, taken, prereqs):
-        pass 
+        
+        for course in prereqs:
+            if (course not in taken):
+                return False
+
+        return True
 
     def getOptions(self, taken):
-        pass 
+        
+        options = []
+
+        for k, v in self.curriculum.items():
+
+            if (k not in taken):
+                if (self.isSatisfied(taken, v)):
+                    options.append(k)
+
+        return options
 
     def printOptions(self, options):
         pass 

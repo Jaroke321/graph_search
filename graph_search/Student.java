@@ -275,6 +275,20 @@ public class Student {
     } // END METHOD
 
     /**
+     * This method will show the degree progress of the current student. To do this
+     * the core classes still needed will be displayed, and the classes that are
+     * still needed along with their pre req courses.
+     */
+    public void showProgress() {
+
+        ArrayList<ArrayList<String>> remaining_curriculum = this.calculateCurriclum();
+
+        System.out.println(this.coreToString());
+
+        System.out.println(this.curriculumToString(remaining_curriculum));
+    }
+
+    /**
      * Calculates the total credits that the student has accumulated up until this
      * point
      * 
@@ -461,7 +475,7 @@ public class Student {
      * @param new_courses
      */
     public void update(ArrayList<String> new_courses) {
-
+        this.classes.addAll(new_courses);
     }
 
     /**
@@ -480,8 +494,6 @@ public class Student {
 
         System.out.println(student.curriculumToString(remaining_curriculum));
 
-        // Print all of the info to the user
-        // student.showAll();
     }
 
 }
