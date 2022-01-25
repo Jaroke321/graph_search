@@ -43,7 +43,7 @@ public class Scheduler {
     }
 
     /**
-     * No- parms constructor
+     * No-parms constructor
      */
     public Scheduler() {
         // Intentionally blank
@@ -366,6 +366,10 @@ public class Scheduler {
 
             // Pick courses returns an empty list if there was a problem getting user input
             if (!current_semester.isEmpty()) {
+                // pcik courses returns a 'q' if user wants to quit the program
+                if (current_semester.get(0).equalsIgnoreCase("q")) {
+                    return schedule; // Exit by returning schedule
+                }
 
                 schedule.add(current_semester); // Add this semester to the schedule
                 taken.addAll(current_semester); // Add this semesters courses to the taken list
