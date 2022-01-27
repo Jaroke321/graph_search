@@ -1,14 +1,67 @@
 
 class Scheduler:
-    ''''''
+    '''
+    A class used to help a student schedule courses.
+
+    Attributes:
+    ----------
+    curriculum : dict
+        Dictionary representing the courses in the curriculum and their prereqs. Keys are the courses and the values is a list of prereqs.
+    filename : str
+        String representing the filename holding the curriculum.
+    maxPerSemester : int
+        Integer that determines how many courses the student can take each semester.
+    auto_complete : boolean
+        Boolean value. If true, the scheduler will pick courses, False to use user input.
+
+    Methods:
+    ----------
+    loadData(filename = "comp_sci.txt", maxPerSemester = 3, auto_complete = False):
+        Loads the data into curriculum from a given filename.
+    setMaxPerSemester(val):
+        Sets the maximum courses the student can take per semester.
+    setFilename(filename):
+        Sets the filename variable
+    setAutoComplete(val):
+        Sets the auto_complete variable
+    showCurriculum():
+        Prints the curriculum to the console
+    showSchedule():
+        Prints the schedule to the console
+    showSchedule(arr):
+        Overloaded showSchedule method that will take an arr and print it to the console
+    isSatisfied(taken, prereqs):
+        Compares courses that have been taken and prereqs for a course to see if the student can take the course in question
+    getOptions(taken):
+        Gets the options the student has for courses given the courses already taken
+    printOptions(options):
+        Prints the current semesters options to the console. Used to get user input.
+    getUserInput(options):
+        Gets user input so that the user can pick their own courses
+    '''
     
     def __init__(self):
-        ''''''
+        '''Basic constructor method for the Scheduler class.'''
         # Dictionary to hold the curriculum
         self.curriculum = {}
 
-    def loadData(self, filename = None, maxPerSemester = 3, auto_complete = True):
-        ''''''
+    def loadData(self, filename = "comp_sci.txt", maxPerSemester = 3, auto_complete = False):
+        '''Method that will load all of the data for the Scheduler given the parameters given.
+        
+        Parameters
+        -----------
+        filename : str 
+            Filename with the curriculum data. (default = 'comp_sci.txt')
+        maxPerSemester : int
+            The maximum number of courses that can be taken each semester. (default = 3)
+        auto_complete : boolean
+            True if the Scheduler should pick courses, False if user wants to give input. (default = False)
+
+        Raises:
+        ----------
+        FileNotFoundError
+            If there is an issue with reading from the file provided, error is thrown.
+         '''
 
         # Set all of the instance variables
         if maxPerSemester > 0:
@@ -35,34 +88,45 @@ class Scheduler:
                 self.curriculum[course] = prereqs   
 
         except:
-            print("[!] ERROR: Something went wrong while reading from the file {0}"
-                .format(self.filename))
+            raise FileNotFoundError("The file {0} does not exist".format(filename))
 
 
 
     def setMaxPerSemester(self, val):
-        ''''''
+        '''Sets the maxPerSemester variable'''
         self.setMaxPerSemester = val
 
     def setFilename(self, filename):
-        ''''''
+        '''Sets the filename variable'''
         self.filename = filename
 
     def setAutoComplete(self, val):
-        ''''''
+        '''Sets the auto_complete variable'''
         self.auto_complete = val
 
     def showCurriculum(self):
-        ''''''
-        pass 
+        '''Prints the curriculum to the console'''
+        
+        # Print the header
+        print("\n----------------COMPUTER SCIENCE CURRICULUM--------------\n")
+
+        count = 1
+
+        for k, v in self.curriculum.items():
+            line = str(count) + ") "
+            line += k + ": \n     prerequisites => "
+            line += v + "\n"
+
+            print(line)
+            count++
 
     def showSchedule(self):
-        ''''''
+        '''Prints the students schedule to the console'''
         schedule = self.makeSchedule()
         self.showSchedule(schedule)
 
     def showSchedule(self, arr):
-        ''''''
+        '''Prints the students schedule to the console.'''
         pass 
 
     def isSatisfied(self, taken, prereqs):
@@ -154,4 +218,4 @@ if __name__ == "__main__":
 
     # Make and display the schedule
     schedule = scheduler.makeSchedule()
-    scheduler.showSchedule() 
+    scheduler.showSchedule(schedule) 
